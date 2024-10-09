@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>PayU LATAM WebCheckout</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CryptoJS Library-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+
+<body>
+
+  <!-- PayU LATAM Webcheckout Form Content -->
+  <div class="panel">
+    <div>
+      <h2>Ejemplo de Formulario de pago</h2>
+    </div>
+    <div>
+      <hr class="solid">
+    </div>
+    <div>
+      <div class="form-container">
+
+        <form id="webcheckout-form" method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
+
+          <input id="lng" name="lng" type="hidden" class="field" value="es">
+
+          <!-- Credenciales -->
+
+          <input id="merchantId" name="merchantId" type="hidden" value="508029">
+          <input id="accountId" name="accountId" type="hidden" value="512321">
+
+          <button type="button" id="info-button" class="btn-secondary">Generar Información Aleatoriamente</button>
+
+          <div id="payment-info">
+            <label class="label">Resumen de Pedido</label>
+
+            <div class="form-row">
+              <label for="description">Descripción</label>
+              <input id="description" name="description" type="text" class="field" placeholder="Descripción del pedido"
+                readonly>
+            </div>
+
+            <div class="form-row">
+              <label for="referenceCode">Código de referencia</label>
+              <input id="referenceCode" name="referenceCode" type="text" class="field"
+                placeholder="ID de conciliación del pedido" readonly>
+            </div>
+
+            <div class="form-row">
+              <label for="amount">Monto total</label>
+              <input id="amount" name="amount" type="text" class="field" placeholder="Monto total del pedido">
+            </div>
+
+            <div class="form-row">
+              <label for="tax">Impuesto</label>
+              <input id="tax" name="tax" type="text" class="field" placeholder="Monto de impuestos del pedido" readonly>
+            </div>
+
+            <div class="form-row">
+              <label for="taxReturnBase">Subtotal</label>
+              <input id="taxReturnBase" name="taxReturnBase" class="field" type="text"
+                placeholder="Monto subtotal del pedido" readonly>
+            </div>
+
+            <div class="form-row">
+              <label for="currency">Moneda</label>
+              <input id="currency" name="currency" type="text" class="field" placeholder="Moneda del pedido" readonly>
+            </div>
+
+            <div>
+
+              <label class="label">Información de Facturación</label>
+
+              <div class="form-row">
+                <label for="payerFullName">Nombre completo</label>
+                <input id="payerFullName" name="payerFullName" type="text" class="field"
+                  placeholder="Nombre completo del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="payerEmail">Correo electrónico</label>
+                <input id="payerEmail" name="payerEmail" type="email" class="field"
+                  placeholder="Correo electrónico del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="payerOfficePhone">Teléfono principal</label>
+                <input id="payerOfficePhone" name="payerOfficePhone" type="tel" class="field"
+                  placeholder="Teléfono de contacto del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="payerPhone">Número de teléfono</label>
+                <input id="payerPhone" name="payerPhone" type="tel" class="field"
+                  placeholder="Número de teléfono del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="payerMobilePhone">Teléfono móvil</label>
+                <input id="payerMobilePhone" name="payerMobilePhone" type="tel" class="field"
+                  placeholder="Número de teléfono móvil del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="payerDocumentType">Tipo de documento</label>
+                <input id="payerDocumentType" name="payerDocumentType" type="text" class="field"
+                  placeholder="Tipo de documento del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="payerDocument">Número de documento</label>
+                <input id="payerDocument" name="payerDocument" type="text" class="field"
+                  placeholder="Número de documento del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="billingCountry">País de Facturación</label>
+                <input id="billingCountry" name="billingCountry" type="text" class="field"
+                  placeholder="País de facturación del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="billingCity">Ciudad de Facturación</label>
+                <input id="billingCity" name="billingCity" type="text" class="field"
+                  placeholder="Ciudad de facturación del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="billingAddress">Dirección de Facturación</label>
+                <input id="billingAddress" name="billingAddress" type="text" class="field"
+                  placeholder="Dirección de facturación del pagador" readonly>
+              </div>
+
+              <div class="form-row">
+                <label for="zipCode">Código Postal de Facturación</label>
+                <input id="zipCode" name="zipCode" type="text" class="field" placeholder="Código postal del pagador"
+                  readonly>
+              </div>
+            </div>
+
+
+            <label class="label">Información de Envío</label>
+
+            <div class="checkbox-address">
+              <input type="radio" id="shipping-option1" name="shipping-option" onclick="useBillingInformation()"
+                checked>
+              <label for="shipping-option1">Usar la información de facturación</label>
+            </div>
+
+            <div class="checkbox-address">
+              <input type="radio" id="shipping-option2" name="shipping-option" onclick="toggleShippingAddress()">
+              <label for="shipping-option2">¿Diferente de la información de facturación?</label>
+            </div>
+
+            <div class="checkbox-address">
+              <input type="radio" id="shipping-option3" name="shipping-option" onclick="setEmptyShippingInformation()">
+              <label for="shipping-option3">El pedido no tiene información de envío</label>
+            </div>
+
+            <div id="shipping-information">
+              <div class="form-row">
+                <label for="buyerFullName">Nombre completo</label>
+                <input id="buyerFullName" name="buyerFullName" type="text" class="field"
+                  placeholder="Nombre completo del comprador">
+              </div>
+
+              <div class="form-row">
+                <label for="buyerEmail">Correo electrónico</label>
+                <input id="buyerEmail" name="buyerEmail" type="email" class="field"
+                  placeholder="Correo electrónico del comprador">
+              </div>
+
+              <div class="form-row">
+                <label for="buyerDocumentType">Tipo de documento</label>
+                <input id="buyerDocumentType" name="buyerDocumentType" type="text" class="field"
+                  placeholder="Tipo de documento del comprador">
+              </div>
+
+              <div class="form-row">
+                <label for="buyerDocument">Número de documento</label>
+                <input id="buyerDocument" name="buyerDocument" type="text" class="field"
+                  placeholder="Número de documento del comprador">
+              </div>
+
+              <div class="form-row">
+                <label for="officeTelephone">Teléfono principal</label>
+                <input id="officeTelephone" name="officeTelephone" type="tel" class="field"
+                  placeholder="Teléfono de contacto del comprador">
+              </div>
+
+              <div class="form-row">
+                <label for="telephone">Teléfono</label>
+                <input id="telephone" name="telephone" type="tel" class="field" placeholder="Teléfono del comprador">
+              </div>
+
+              <div class="form-row">
+                <label for="mobilePhone">Teléfono móvil</label>
+                <input id="mobilePhone" name="mobilePhone" type="tel" class="field"
+                  placeholder="Número de teléfono móvil del comprador">
+              </div>
+              <div class="form-row">
+                <label for="shippingState">Estado de envío</label>
+                <select id="shippingState" name="shippingState" class="field">
+                  <option value="">Seleccione un estado</option>
+                  <option value="CO-AMA">Amazonas</option>
+                  <option value="CO-ANT">Antioquia</option>
+                  <option value="CO-ARA">Arauca</option>
+                  <option value="CO-ATL">Atlántico</option>
+                  <option value="CO-BOL">Bolívar</option>
+                  <option value="CO-BOY">Boyacá</option>
+                  <option value="CO-CAL">Caldas</option>
+                  <option value="CO-CAQ">Caquetá</option>
+                  <option value="CO-CAS">Casanare</option>
+                  <option value="CO-CAU">Cauca</option>
+                  <option value="CO-CES">Cesar</option>
+                  <option value="CO-CHO">Chocó</option>
+                  <option value="CO-CUN">Cundinamarca</option>
+                  <option value="CO-COR">Córdoba</option>
+                  <option value="CO-DC">Distrito Capital de Bogotá</option>
+                  <option value="CO-GUA">Guainía</option>
+                  <option value="CO-GUV">Guaviare</option>
+                  <option value="CO-HUI">Huila</option>
+                  <option value="CO-LAG">La Guajira</option>
+                  <option value="CO-MAG">Magdalena</option>
+                  <option value="CO-MET">Meta</option>
+                  <option value="CO-NAR">Nariño</option>
+                  <option value="CO-NSA">Norte de Santander</option>
+                  <option value="CO-PUT">Putumayo</option>
+                  <option value="CO-QUI">Quindío</option>
+                  <option value="CO-RIS">Risaralda</option>
+                  <option value="CO-SAP">San Andrés, Providencia y Santa Catalina</option>
+                  <option value="CO-SAN">Santander</option>
+                  <option value="CO-SUC">Sucre</option>
+                  <option value="CO-TOL">Tolima</option>
+                  <option value="CO-VAC">Valle del Cauca</option>
+                  <option value="CO-VAU">Vaupés</option>
+                  <option value="CO-VID">Vichada</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="shippingCountry">País de envío</label>
+                <input id="shippingCountry" name="shippingCountry" type="text" class="field"
+                  placeholder="País de envío">
+              </div>
+
+              <div class="form-row">
+                <label for="shippingCity">Ciudad de envío</label>
+                <input id="shippingCity" name="shippingCity" type="text" class="field" placeholder="Ciudad de envío">
+              </div>
+
+              <div class="form-row">
+                <label for="shippingAddress">Dirección de envío</label>
+                <input id="shippingAddress" name="shippingAddress" type="text" class="field"
+                  placeholder="Dirección de envío">
+              </div>
+
+            </div>
+
+            <!-- Información Adicional -->
+
+            <input id="algorithmSignature" name="algorithmSignature" name="algorithmSignature" type="hidden">
+            <input id="signature" name="signature" type="hidden">
+            <input id="sourceUrl" name="sourceUrl" type="hidden">
+            <input id="responseUrl" name="responseUrl" type="hidden">
+            <input id="confirmationUrl" name="confirmationUrl" type="hidden">
+            <input id="expirationDate" name="expirationDate" type="hidden">
+            <input id="extra1" name="extra1" type="hidden">
+            <input id="extra2" name="extra2" type="hidden">
+            <input id="extra3" name="extra3" type="hidden">
+            <input id="test" name="test" type="hidden">
+
+          </div>
+
+          <div>
+
+            <input class="btn" name="Submit" type="submit" value="Pagar con PayU">
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+<!-- Script -->
+<script>
+  const accountIdCountry = { "512321": "CO" };
+
+  const countryNames = { "CO": "Colombia" };
+
+  const countryCurrency = { "CO": "COP" };
+
+  const documentTypes = [
+    { iso: "CC", description: "Cédula de ciudadanía", country: "Colombia" },
+    { iso: "CE", description: "Cédula de extranjería", country: "Colombia" },
+    { iso: "CEL", description: "Identificado por la línea móvil", country: "Colombia" },
+    { iso: "NIT", description: "Número de identificación tributaria", country: "Colombia" },
+    { iso: "RC", description: "Registro civil", country: "Colombia" },
+    { iso: "TI", description: "Tarjeta de identidad", country: "Colombia" },
+    // { iso: "DL", description: "Licencia de conducir", country: "Otro" },
+    // { iso: "ID", description: "Identificación", country: "Otro" },
+    // { iso: "IDC", description: "Identificador único del cliente", country: "Otro" },
+    // { iso: "NIF", description: "Número de identificación fiscal", country: "Otro" },
+    // { iso: "PP", description: "Pasaporte", country: "Otro" },
+    // { iso: "RDE", description: "Tipo de documento RDE", country: "Otro" },
+    // { iso: "RE", description: "Tipo de documento RE", country: "Otro" },
+    // { iso: "RIF", description: "Registro de Información Fiscal", country: "Otro" },
+    // { iso: "RM", description: "Registro Mercantil", country: "Otro" },
+    // { iso: "RMC", description: "Registro Consular", country: "Otro" },
+    // { iso: "RNC", description: "Registro Nacional de Contribuyentes", country: "Otro" },
+    // { iso: "SC", description: "Salvoconducto", country: "Otro" },
+    // { iso: "SSN", description: "Número de Seguridad Social", country: "Otro" }
+  ];
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('shipping-information').style.display = 'none';
+  });
+
+  function useBillingInformation() {
+    document.getElementById('shipping-information').style.display = 'none';
+
+    // Copiar información de facturación a envío
+    document.getElementById('buyerFullName').value = document.getElementById('payerFullName').value;
+    document.getElementById('buyerEmail').value = document.getElementById('payerEmail').value;
+    document.getElementById('buyerDocumentType').value = document.getElementById('payerDocumentType').value;
+    document.getElementById('buyerDocument').value = document.getElementById('payerDocument').value;
+    document.getElementById('officeTelephone').value = document.getElementById('payerOfficePhone').value;
+    document.getElementById('telephone').value = document.getElementById('payerPhone').value;
+    document.getElementById('mobilePhone').value = document.getElementById('payerMobilePhone').value;
+    document.getElementById('shippingCountry').value = document.getElementById('billingCountry').value;
+    document.getElementById('shippingCity').value = document.getElementById('billingCity').value;
+    document.getElementById('shippingAddress').value = document.getElementById('billingAddress').value;
+  }
+
+  function toggleShippingAddress() {
+    document.getElementById('shipping-information').style.display = 'block';
+  }
+
+  function setEmptyShippingInformation() {
+    document.getElementById('shipping-information').style.display = 'none';
+
+    // Limpiar campos de información de envío
+    document.getElementById('buyerFullName').value = '';
+    document.getElementById('buyerEmail').value = '';
+    document.getElementById('buyerDocumentType').value = '';
+    document.getElementById('buyerDocument').value = '';
+    document.getElementById('officeTelephone').value = '';
+    document.getElementById('telephone').value = '';
+    document.getElementById('mobilePhone').value = '';
+    document.getElementById('shippingCountry').value = '';
+    document.getElementById('shippingCity').value = '';
+    document.getElementById('shippingAddress').value = '';
+  }
+
+  document.getElementById('info-button').addEventListener('click', function (event) {
+    event.preventDefault();
+    generateRandomInfo();
+  });
+
+  function generateSignature(signatureString, hashType) {
+    let hashFunction;
+    switch (hashType) {
+      case "MD5":
+        hashFunction = CryptoJS.MD5;
+        break;
+      case "SHA1":
+        hashFunction = CryptoJS.SHA1;
+        break;
+      case "SHA256":
+        hashFunction = CryptoJS.SHA256;
+        break;
+      default:
+        console.log("Invalid hash type");
+        return null;
+    }
+    return hashFunction(signatureString).toString();
+  }
+
+  // Fecha de expiración para pagos en efectivo
+  function getFormattedDate() {
+    let date = new Date();
+    date.setDate(date.getDate() + 1); // Agrega 1 día a la fecha actual
+
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses comienzan desde 0
+    let day = String(date.getDate()).padStart(2, '0');
+    let hours = String(date.getHours()).padStart(2, '0');
+    let minutes = String(date.getMinutes()).padStart(2, '0');
+    let seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  function generateRandomInfo() {
+
+    const accountId = document.getElementById('accountId').value;
+    const countryCode = accountIdCountry[accountId];
+    const countryName = countryNames[countryCode];
+    const currency = countryCurrency[countryCode];
+
+    // Generar monto aleatorio
+    const amount = (Math.random() * 10000 + 1).toFixed(2);
+
+    // Generar tax y taxReturnBase aleatorio
+    const taxRate = 0.19; // Asumiendo tasa de impuesto del 19
+    const taxReturnBase = (amount / (1 + taxRate)).toFixed(2);
+    const tax = (amount - taxReturnBase).toFixed(2);
+
+    // Generar descripción y código de referencia aleatorios
+    const description = 'Order description for ' + countryName;
+    const referenceCode = 'REF' + Math.floor(Math.random() * 1000000);
+
+    // Obtener tipos de documentos para el país
+    const countryDocuments = documentTypes.filter(doc => doc.country.includes(countryName) || doc.country.includes('Other'));
+
+    // Si no se encuentran tipos de documentos, usar uno por defecto
+    let randomDoc;
+    if (countryDocuments.length > 0) {
+      randomDoc = countryDocuments[Math.floor(Math.random() * countryDocuments.length)];
+    } else {
+      randomDoc = { iso: "PP", description: "Passport", country: "Other" };
+    }
+
+    // Establecer campos
+
+    // Resumen de Pedido
+    document.getElementById('description').value = description;
+    document.getElementById('referenceCode').value = referenceCode;
+    document.getElementById('taxReturnBase').value = taxReturnBase;
+    document.getElementById('tax').value = tax;
+    document.getElementById('amount').value = amount;
+    document.getElementById('currency').value = currency;
+
+    // Información de Facturación
+    document.getElementById('payerFullName').value = 'APPROVED';
+    document.getElementById('payerEmail').value = 'pruebas@payulatam.com';
+    document.getElementById('payerOfficePhone').value = '3001234567';
+    document.getElementById('payerPhone').value = '3105559999';
+    document.getElementById('payerMobilePhone').value = '3151231234';
+    document.getElementById('payerDocumentType').value = randomDoc.iso;
+    document.getElementById('payerDocument').value = '1234567890';
+    document.getElementById('billingCountry').value = countryCode;
+    document.getElementById('billingCity').value = 'Bogotá';
+    document.getElementById('billingAddress').value = 'Street 123 98-76';
+    document.getElementById('zipCode').value = '110111';
+
+    // Calcular la cadena de firma
+
+    const apiKey = '4Vj8eK4rloUd272L48hsrarnUA'; // PayU test API key
+    const merchantId = document.getElementById('merchantId').value;
+    const signatureString = apiKey + '~' + merchantId + '~' + referenceCode + '~' + amount + '~' + currency;
+
+    // Generar el hash de la firma usando SHA256 (según la documentación de PayU)
+    const algorithmHash = "SHA256";
+    const signatureHash = generateSignature(signatureString, algorithmHash);
+
+    // Información Adicional
+    document.getElementById('algorithmSignature').value = algorithmHash;
+    document.getElementById('signature').value = signatureHash;
+    document.getElementById('sourceUrl').value = 'https://www.yoursite.com/';
+    document.getElementById('responseUrl').value = 'https://www.yoursite.com/response';
+    document.getElementById('confirmationUrl').value = 'https://www.yoursite.com/confirmation';
+
+    let cashVoucherExpDate = getFormattedDate();
+    document.getElementById('expirationDate').value = cashVoucherExpDate;
+
+    document.getElementById('test').value = '0';
+
+  }
+
+  // Inicialización al cargar la página
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('shipping-information').style.display = 'none';
+
+    // Desmarcar los radio buttons al cargar la página
+    document.getElementById('shipping-option2').checked = false;
+    document.getElementById('shipping-option3').checked = false;
+  });
+
+  function handleFormSubmit(event) {
+    // Si el usuario no ha seleccionado una opción diferente, ejecutamos useBillingInformation()
+    if (!document.getElementById('shipping-option2').checked && !document.getElementById('shipping-option3').checked) {
+      useBillingInformation();
+    }
+    // El formulario continuará con el envío normalmente
+  }
+
+</script>
+
+<!-- Page Styling -->
+<style>
+  body {
+    background: linear-gradient(90deg, rgba(235, 242, 247, 1) 0%, rgba(255, 255, 255, 1) 100%);
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  hr.solid {
+    border-top: 3px solid #bbb;
+    margin-bottom: 1em;
+  }
+
+  .panel {
+    margin: 0 auto;
+    max-width: 900px;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    display: block;
+    width: 80%;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    place-content: center;
+  }
+
+  .label {
+    display: flex;
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    justify-content: center;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #333;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .form-row label {
+    width: 270px;
+    text-align: left;
+    margin-right: 10px;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .field {
+    box-sizing: border-box;
+    line-height: 1.5;
+    font-size: 13px;
+    width: 100%;
+    text-align: left;
+    justify-content: space-between;
+    border: 2px solid #d9d9d9;
+    color: #333;
+    border: 1px solid #ddd;
+    background-color: #fbfbfd;
+    border-radius: 10px;
+    position: relative;
+    padding: 10px;
+    word-break: break-word;
+    font-family: Quicksand, Open Sans, Segoe UI, sans-serif;
+    opacity: 1;
+  }
+
+  ::placeholder {
+    color: rgb(155, 172, 200);
+    opacity: 1;
+    line-height: 1.5;
+    font-family: sans-serif;
+  }
+
+  .checkbox-address {
+    box-sizing: border-box;
+    line-height: 1.5;
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1.5em;
+    margin-top: -0.25em;
+    position: relative;
+    padding: 10px;
+    word-break: break-word;
+    font-family: Quicksand, Open Sans, Segoe UI, sans-serif;
+    opacity: 1;
+  }
+
+  .btn {
+    background: #a5c312;
+    width: -webkit-fill-available;
+    color: #fff;
+    display: block;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 1em;
+  }
+
+  .btn:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: none;
+  }
+
+  .btn-secondary {
+    background: #6d7278;
+    width: -webkit-fill-available;
+    color: #fff;
+    display: block;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 1em;
+  }
+
+  .btn-secondary:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: none;
+  }
+</style>
+
+</html>
