@@ -182,6 +182,12 @@
               </div>
 
               <div class="form-row">
+                <label for="payerState">Billing state</label>
+                <input id="payerState" name="payerState" type="text" class="field"
+                  placeholder="Billing state in iso code 3166, e.g., set SP for São Paulo (BR) or set AR-C for Buenos Aires (AR).">
+              </div>
+
+              <div class="form-row">
                 <label for="billingCity">Billing City</label>
                 <input id="billingCity" name="billingCity" type="text" class="field" placeholder="Payer billing city">
               </div>
@@ -189,6 +195,12 @@
               <div class="form-row">
                 <label for="billingAddress">Billing Address</label>
                 <input id="billingAddress" name="billingAddress" type="text" class="field"
+                  placeholder="Payer billing address">
+              </div>
+
+              <div class="form-row">
+                <label for="billingAddress2">Billing Address 2</label>
+                <input id="billingAddress2" name="billingAddress2" type="text" class="field"
                   placeholder="Payer billing address">
               </div>
 
@@ -260,15 +272,15 @@
               </div>
 
               <div class="form-row">
-                <label for="shippingState">Shipping state</label>
-                <input id="shippingState" name="shippingState" type="text" class="field"
-                  placeholder="Shipping state in iso code 3166, e.g., set SP for São Paulo (BR) or set AR-C for Buenos Aires (AR).">
-              </div>
-
-              <div class="form-row">
                 <label for="shippingCountry">Shipping country</label>
                 <input id="shippingCountry" name="shippingCountry" type="text" class="field"
                   placeholder="Shipping country">
+              </div>
+
+              <div class="form-row">
+                <label for="shippingState">Shipping state</label>
+                <input id="shippingState" name="shippingState" type="text" class="field"
+                  placeholder="Shipping state in iso code 3166, e.g., set SP for São Paulo (BR) or set AR-C for Buenos Aires (AR).">
               </div>
 
               <div class="form-row">
@@ -280,6 +292,18 @@
                 <label for="shippingAddress">Shipping address</label>
                 <input id="shippingAddress" name="shippingAddress" type="text" class="field"
                   placeholder="Shipping address">
+              </div>
+
+              <div class="form-row">
+                <label for="shippingAddress2">Shipping address 2</label>
+                <input id="shippingAddress2" name="shippingAddress2" type="text" class="field"
+                  placeholder="Shipping address">
+              </div>
+
+              <div class="form-row">
+                <label for="payerShippingPostalCode">Shipping Zip Code</label>
+                <input id="payerShippingPostalCode" name="payerShippingPostalCode" type="text" class="field"
+                  placeholder="Payer postal code">
               </div>
 
             </div>
@@ -488,8 +512,11 @@
     document.getElementById('telephone').value = document.getElementById('payerPhone').value;
     document.getElementById('mobilePhone').value = document.getElementById('payerMobilePhone').value;
     document.getElementById('shippingCountry').value = document.getElementById('billingCountry').value;
+    document.getElementById('shippingState').value = document.getElementById('payerState').value;
     document.getElementById('shippingCity').value = document.getElementById('billingCity').value;
     document.getElementById('shippingAddress').value = document.getElementById('billingAddress').value;
+    document.getElementById('shippingAddress2').value = document.getElementById('billingAddress2').value;
+    document.getElementById('payerShippingPostalCode').value = document.getElementById('zipCode').value;
   }
 
   function toggleShippingAddress() {
@@ -623,33 +650,47 @@
     document.getElementById('billingCountry').value = countryCode;
 
     let paymentCityValue = 'City in ' + countryName; // Default value
+    let billingStateValue = ''; // Billing state (ISO 3166-2 code)
 
     if (countryCode === 'AR') {
       paymentCityValue = 'Ciudad Autónoma de Buenos Aires';
+      billingStateValue = 'AR-C';
     } else if (countryCode === 'BR') {
       paymentCityValue = 'São Paulo';
+      billingStateValue = 'SP';
     } else if (countryCode === 'CL') {
       paymentCityValue = 'Santiago';
+      billingStateValue = 'CL-RM';
     } else if (countryCode === 'CO') {
       paymentCityValue = 'Bogotá';
+      billingStateValue = 'CO-DC';
     } else if (countryCode === 'CR') {
       paymentCityValue = 'San José';
+      billingStateValue = 'CR-SJ';
     } else if (countryCode === 'SV') {
       paymentCityValue = 'San Salvador';
+      billingStateValue = 'SV-SS';
     } else if (countryCode === 'GT') {
-      paymentCityValue = 'Ciudad de Guatemala';
+      paymentCityValue = 'Guatemala City';
+      billingStateValue = 'GT-GU';
     } else if (countryCode === 'HN') {
       paymentCityValue = 'Tegucigalpa';
+      billingStateValue = 'HN-FM';
     } else if (countryCode === 'MX') {
-      paymentCityValue = 'Ciudad de México';
+      paymentCityValue = 'Mexico City';
+      billingStateValue = 'MX-CMX';
     } else if (countryCode === 'PA') {
-      paymentCityValue = 'Ciudad de Panamá';
+      paymentCityValue = 'Panama City';
+      billingStateValue = 'PA-8';
     } else if (countryCode === 'PE') {
       paymentCityValue = 'Lima';
+      billingStateValue = 'PE-LMA';
     }
 
     document.getElementById('billingCity').value = paymentCityValue;
-    document.getElementById('billingAddress').value = 'Street 123 98-76';
+    document.getElementById('payerState').value = billingStateValue;
+    document.getElementById('billingAddress').value = 'Street 123';
+    document.getElementById('billingAddress2').value = '98-76';
 
     let paymentZipCode = '123456'; // Valor por defecto
 
